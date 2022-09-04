@@ -2,3 +2,5 @@
 venv/bin
 hosts.txt
 from_to_emails.txt
+from_to_emails_test.txt
+re_test.py
