@@ -1,4 +1,5 @@
 # created by virtualenv automatically
+.idea
 venv/bin
 hosts.txt
 from_to_emails.txt
