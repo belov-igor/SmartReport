@@ -1,0 +1,4 @@
+# created by virtualenv automatically
+venv/bin
+hosts.txt
+from_to_emails.txt
