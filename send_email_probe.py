@@ -18,7 +18,6 @@ with open('/Users/bisgarik/PycharmProjects/SmartReport/from_to_emails.txt') as m
             }
 
     df = pd.DataFrame.from_dict(data=data, orient='index')
-    # df = pd.DataFrame.append(first_row)
     df.to_html()
     table = pretty_html_table.build_table(df=df, color='blue_light', index=True)
 
@@ -34,9 +33,7 @@ with open('/Users/bisgarik/PycharmProjects/SmartReport/from_to_emails.txt') as m
     #
     main_table = MIMEText('<h3>Adaptec report</h3>', 'html')
     table = MIMEText(table, 'html')
-    # print(table)
 
-    # msg.attach(main_table)
     msg.attach(table)
 
     # server.send_message(msg)
