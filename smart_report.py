@@ -1,7 +1,7 @@
+# -*- coding: utf-8 -*-
+
 import paramiko
-from send_email_probe import send_email
 import os
-import pandas as pd
 
 
 class SmartReport:
