@@ -67,9 +67,3 @@ if __name__ == '__main__':
 
         print(data)
 
-# Sending e-mail
-    send_email(host='mx.prolog.ltd',
-               from_addr='monitoring@prolog.ltd',
-               to_addr='belov@prolog.ltd',
-               subject='test',
-               body=str(data))
