@@ -6,7 +6,7 @@ import pretty_html_table
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-FROM_TO_EMAILS = '/Users/bisgarik/PycharmProjects/SmartReport/from_to_emails.txt'
+FROM_TO_EMAILS = 'from_to_emails.txt'
 
 
 class SmartReportSender:
