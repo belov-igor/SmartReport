@@ -51,7 +51,7 @@ class SmartReport:
 
 if __name__ == '__main__':
 
-    with open('/Users/bisgarik/PycharmProjects/SmartReport/hosts.txt') as hosts:
+    with open('hosts.txt') as hosts:
         adaptec_report = dict()
 
         try:
@@ -66,4 +66,3 @@ if __name__ == '__main__':
             data = error
 
         print(data)
-
