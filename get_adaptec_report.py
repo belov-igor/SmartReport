@@ -3,7 +3,9 @@
 import subprocess
 import pandas as pd
 import pretty_html_table
+
 from hosts import HOSTS
+from send_email import ReportSender
 
 
 class SmartReport:
@@ -52,9 +54,12 @@ if __name__ == '__main__':
                 report = SmartReport(hostname=host)
                 ld_stat = report.run()
                 adaptec_report.update({host: ld_stat})
-            data = f'<h3>Adaptec report</h3> \n ' \
-                   f'{get_data_frame(data=adaptec_report)} '
+            report_table = f'<h3>Adaptec report</h3> \n ' \
+                           f'{get_data_frame(data=adaptec_report)} '
         except Exception as error:
-            data = error
-
-        print(data)
+            report_table = error
+        else:
+            print(report_table)
+            report_message = ReportSender(subject='Adaptec report',
+                                          body=report_table)
+            report_message.run()
