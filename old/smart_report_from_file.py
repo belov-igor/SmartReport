@@ -54,7 +54,7 @@ class SmartReport:
 
 if __name__ == '__main__':
 
-    with open('hosts.py') as hosts:
+    with open('../hosts.py') as hosts:
         adaptec_report = dict()
 
         try:

@@ -2,6 +2,7 @@
 
 import paramiko
 import os
+import io
 
 
 class SmartReport:
@@ -16,9 +17,15 @@ class SmartReport:
         self.data = ''
 
     def connect(self):
-        key = paramiko.RSAKey.from_private_key_file(self.rsa_key)
+        key = paramiko.RSAKey.from_private_key_file(filename=self.rsa_key)
+        print(str(key))
+        print(type(self.rsa_key))
+        io_key = io.StringIO()
+        io_key.write(self.rsa_key)
+        io_key.seek(0)
         self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
-        self.client.connect(hostname=self.hosthame, username='root', pkey=key)
+        self.client.connect(hostname=self.hosthame, username='root', port=22, pkey=key)
+        # self.client.connect(hostname=self.hosthame, username='root', key_filename="/Users/bisgarik/.ssh/id_rsa")
 
     def logical_device_status(self):
         stdin, stdout, stderr = self.client.exec_command('/root/bin/arcconf GETCONFIG 1 ld')
@@ -51,7 +58,7 @@ class SmartReport:
 
 if __name__ == '__main__':
 
-    with open('hosts.txt') as hosts:
+    with open('/hosts.py') as hosts:
         adaptec_report = dict()
 
         try:
