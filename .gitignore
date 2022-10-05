@@ -1,7 +1,7 @@
 # created by virtualenv automatically
 .idea
-venv/bin
+venv
+env
 hosts.py
-from_to_emails.txt
 email_server.py
-re_test.py
+old
