@@ -12,16 +12,10 @@ class ReportSender:
         self.body = body
         self.subject = subject
         self.message = None
-        self.body = None
         self.main_table = None
         self.msg = None
         self.server = None
         self.df = None
-
-    # def get_data_frame(self):
-    #     self.df = pd.DataFrame.from_dict(data=self.report_result, orient='index')
-    #     self.df.to_html()
-    #     self.table = pretty_html_table.build_table(df=self.df, color='blue_light', index=True)
 
     def smtp_connect(self):
         """
@@ -43,19 +37,18 @@ class ReportSender:
         self.server.send_message(msg=self.msg)
 
     def run(self):
-        # self.get_data_frame()
         self.smtp_connect()
         self.create_message()
         self.send_message(self.msg)
         self.server.quit()
 
 
-if __name__ == '__main__':
-    data = {'test1': {'rootvol': 'Optimal'},
-            'test2': {'rootvol': 'Optimal', 'datavol': 'Optimal'},
-            'test3': {'rootvol': 'Optimal', 'datavol1': 'Optimal', 'datavol2': 'Optimal', 'ssdvol': 'Optimal'}
-            }
-
-    report_message = ReportSender(subject='Adaptec report',
-                                  body=data)
-    report_message.run()
+# if __name__ == '__main__':
+#     data = {'test1': {'rootvol': 'Optimal'},
+#             'test2': {'rootvol': 'Optimal', 'datavol': 'Optimal'},
+#             'test3': {'rootvol': 'Optimal', 'datavol1': 'Optimal', 'datavol2': 'Optimal', 'ssdvol': 'Optimal'}
+#             }
+#
+#     report_message = ReportSender(subject='Adaptec report',
+#                                   body=data)
+#     report_message.run()
