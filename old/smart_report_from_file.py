@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
-from hosts import HOSTS
+from info.hosts import HOSTS
 
 
 class SmartReport:
@@ -54,7 +54,7 @@ class SmartReport:
 
 if __name__ == '__main__':
 
-    with open('../hosts.py') as hosts:
+    with open('../info/hosts.py') as hosts:
         adaptec_report = dict()
 
         try:
