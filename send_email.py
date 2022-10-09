@@ -3,7 +3,7 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email_server import SMTP_SERVER, FROM, TO
+from info.email_server import SMTP_SERVER, FROM, TO
 
 
 class ReportSender:
