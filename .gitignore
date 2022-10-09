@@ -2,6 +2,6 @@
 .idea
 venv
 env
-hosts.py
-email_server.py
+info/hosts.py
+info/email_server.py
 old
