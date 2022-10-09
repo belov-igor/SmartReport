@@ -4,7 +4,7 @@ import subprocess
 import pandas as pd
 import pretty_html_table
 
-from hosts import HOSTS
+from info.hosts import HOSTS
 from send_email import ReportSender
 
 
@@ -20,15 +20,14 @@ class SmartReport:
         self.data = ''
 
     def logical_device_status(self):
-        # host = self.hostname
         connect = subprocess.run(
             ["ssh", f"root@{self.hostname}", "/root/bin/arcconf", "GETCONFIG", "1", "ld"],
             stdout=subprocess.PIPE)
         self.data = connect.stdout.decode().split('\n')
         for string in self.data:
-            if 'device name' in string:
+            if 'device name' in string.lower():
                 self.device_name = string.split()[-1]
-            elif 'Status of logical device' in string:
+            if 'status of logical device' in string.lower():
                 self.device_status = string.split()[-1]
         self.config = {self.device_name: self.device_status}
 
@@ -46,7 +45,7 @@ def get_data_frame(data):
 
 if __name__ == '__main__':
 
-    with open('hosts.py') as hosts:
+    with open('info/hosts.py') as hosts:
         adaptec_report = dict()
 
         try:
@@ -59,7 +58,7 @@ if __name__ == '__main__':
         except Exception as error:
             report_table = error
         else:
-            print(report_table)
+            # print(report_table)
             report_message = ReportSender(subject='Adaptec report',
                                           body=report_table)
             report_message.run()
