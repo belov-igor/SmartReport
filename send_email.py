@@ -3,11 +3,15 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+# информация о почтовом сервере, кто отправляет и кому, подтягивается из файла
 from info.email_server import SMTP_SERVER, FROM, TO
 
 
 class ReportSender:
-
+    """
+    Отправка MIME-сообщений в формате HTML на почтовый сервер
+    """
     def __init__(self, subject, body):
         self.body = body
         self.subject = subject
@@ -20,11 +24,13 @@ class ReportSender:
     def smtp_connect(self):
         """
         Подключение к SMTP серверу
-        :return:
         """
         self.server = smtplib.SMTP(SMTP_SERVER)
 
     def create_message(self):
+        """
+        Формирование сообщения MIME-типа
+        """
         self.msg = MIMEMultipart('alternative')
         self.msg['Subject'] = self.subject
         self.msg['From'] = FROM
@@ -33,6 +39,9 @@ class ReportSender:
         self.msg.attach(self.body)
 
     def send_message(self, message):
+        """
+        Отправка
+        """
         self.message = message
         self.server.send_message(msg=self.msg)
 
@@ -41,14 +50,3 @@ class ReportSender:
         self.create_message()
         self.send_message(self.msg)
         self.server.quit()
-
-
-# if __name__ == '__main__':
-#     data = {'test1': {'rootvol': 'Optimal'},
-#             'test2': {'rootvol': 'Optimal', 'datavol': 'Optimal'},
-#             'test3': {'rootvol': 'Optimal', 'datavol1': 'Optimal', 'datavol2': 'Optimal', 'ssdvol': 'Optimal'}
-#             }
-#
-#     report_message = ReportSender(subject='Adaptec report',
-#                                   body=data)
-#     report_message.run()
