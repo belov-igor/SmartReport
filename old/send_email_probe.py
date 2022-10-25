@@ -11,7 +11,7 @@ def send_email(host, subject, from_addr, to_addr, body):
     :param to_addr:
     :param body:
     """
-    # server = smtplib.SMTP(host=host, port=25)
+    server = smtplib.SMTP(host=host, port=25)
 
     mail_body = "\r\n".join((
         "From: %s" % from_addr,
