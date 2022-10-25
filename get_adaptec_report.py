@@ -4,7 +4,7 @@ import subprocess
 import pandas as pd
 import pretty_html_table
 
-from info.hosts import WINDOWS_HOSTS, LINUX_HOSTS
+from info.hosts import WINDOWS_HOSTS, LINUX_HOSTS  # хосты из файла, разделены на списки windows и linux
 from send_email import ReportSender
 
 
@@ -21,9 +21,18 @@ class SmartReport:
         self.data = ''
 
     def logical_device_status(self):
+        """
+        Подключение к хостам по ssh, получение и обработка отчета adaptec arcconf по логическим дискам.
+        :return: сonfig - обработанные данные с arcconf ld в виде словаря.
+        """
+        # По умолчанию arcconf должен быть добавлен на сервере в переменную PATH
         arcconf_path = 'arcconf'
+
+        # В esxi arcconf в PATH не добавлен, лежит в собственных datavol
         if 'esxi' in self.hostname:
             arcconf_path = f'/vmfs/volumes/{self.hostname}_datavol/arcconf'
+
+        # Подключение к хостам по ssh, получение данных arcconf, парсинг
         connect = subprocess.run(
             ["ssh", f"{self.username}@{self.hostname}", f"{arcconf_path}", "GETCONFIG", "1", "ld"],
             stdout=subprocess.PIPE)
@@ -41,6 +50,11 @@ class SmartReport:
 
 
 def get_data_frame(data):
+    """
+    Формирование html-таблицы
+    :param data: данные в виде словаря
+    :return: данные, сформированные в html-таблицу
+    """
     df = pd.DataFrame.from_dict(data=data, orient='index')
     df.to_html()
     table = pretty_html_table.build_table(df=df, color='blue_light', index=True,
@@ -51,26 +65,25 @@ def get_data_frame(data):
 if __name__ == '__main__':
 
     adaptec_report = dict()
-    hosts = dict()
+    hosts_dict = dict()
 
     try:
-        #
-        windows_hosts = [host for host in WINDOWS_HOSTS]
-        linux_hosts = [host for host in LINUX_HOSTS]
-        hosts.update({'root': linux_hosts,
-                      'Administrator': windows_hosts})
+        # Формирование словаря со списком хостов, где ключ - имя пользователя
+        hosts_dict.update({'root': LINUX_HOSTS,
+                           'Administrator': WINDOWS_HOSTS})
 
-        for user_name, host in hosts.items():
-            for hostname in host:
-                report = SmartReport(username=user_name, hostname=hostname)
+        # Проход по хостам и формирование отчета в виде html-таблицы
+        for user_name, hosts in hosts_dict.items():
+            for host in hosts:
+                report = SmartReport(username=user_name, hostname=host)
                 ld_stat = report.run()
-                adaptec_report.update({hostname: ld_stat})
+                adaptec_report.update({host: ld_stat})
         report_table = f'<h3>Adaptec report</h3>\n'\
                        f'{get_data_frame(data=adaptec_report)}'
     except Exception as error:
         report_table = error
     else:
-        # print(report_table)
+        # Отправка отчета
         report_message = ReportSender(subject='Adaptec report',
                                       body=report_table)
         report_message.run()
