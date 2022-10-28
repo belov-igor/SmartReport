@@ -4,7 +4,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-# информация о почтовом сервере, кто отправляет и кому, подтягивается из файла
+# информация о почтовом сервере, кто отправляет и кому подтягивается из файла
 from info.email_server import SMTP_SERVER, FROM, TO
 
 
