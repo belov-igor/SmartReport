@@ -5,6 +5,7 @@ import pandas as pd
 import pretty_html_table
 
 from info.hosts import WINDOWS_HOSTS, LINUX_HOSTS  # хосты из файла, разделены на списки windows и linux
+from info.hosts import WINDOWS_USER, LINUX_USER    # пользователи взяты из файла, разделены на windows и linux
 from send_email import ReportSender
 
 
@@ -69,8 +70,8 @@ if __name__ == '__main__':
 
     try:
         # Формирование словаря со списком хостов, где ключ - имя пользователя
-        hosts_dict.update({'root': LINUX_HOSTS,
-                           'Administrator': WINDOWS_HOSTS})
+        hosts_dict.update({LINUX_USER: LINUX_HOSTS,
+                           WINDOWS_USER: WINDOWS_HOSTS})
 
         # Проход по хостам и формирование отчета в виде html-таблицы
         for user_name, hosts in hosts_dict.items():
@@ -78,7 +79,7 @@ if __name__ == '__main__':
                 report = SmartReport(username=user_name, hostname=host)
                 ld_stat = report.run()
                 adaptec_report.update({host: ld_stat})
-        report_table = f'<h3>Adaptec report</h3>\n'\
+        report_table = f'<h3>Adaptec report</h3>\n' \
                        f'{get_data_frame(data=adaptec_report)}'
     except Exception as error:
         report_table = error
