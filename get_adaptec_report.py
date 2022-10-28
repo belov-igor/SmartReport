@@ -9,7 +9,7 @@ from info.hosts import WINDOWS_USER, LINUX_USER    # пользователи в
 from send_email import ReportSender
 
 
-class SmartReport:
+class AdaptecReport:
 
     def __init__(self, username, hostname):
         self.df = None
@@ -76,7 +76,7 @@ if __name__ == '__main__':
         # Проход по хостам и формирование отчета в виде html-таблицы
         for user_name, hosts in hosts_dict.items():
             for host in hosts:
-                report = SmartReport(username=user_name, hostname=host)
+                report = AdaptecReport(username=user_name, hostname=host)
                 ld_stat = report.run()
                 adaptec_report.update({host: ld_stat})
         report_table = f'<h3>Adaptec report</h3>\n' \
