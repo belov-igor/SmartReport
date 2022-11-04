@@ -5,3 +5,6 @@ env
 info/hosts.py
 info/email_server.py
 old
+smartctl_out.txt
+smartstats_temp.xml
+
