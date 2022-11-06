@@ -9,7 +9,12 @@ import copy
 from info.hosts import WINDOWS_HOSTS, LINUX_HOSTS  # хосты из файла, разделены на списки windows и linux
 from send_email import ReportSender
 
-PARAMS = ['0x09', '0x05', '0xC5', '0xC6']
+PARAMS = {
+    '0x09': 'Power-On Hours',
+    '0x05': 'Reallocated Sectors Count',
+    '0xC5': 'Current Pending Sector Count',
+    '0xC6': 'Uncorrectable Sectors Count'
+}
 
 
 class SmartReport:
@@ -41,23 +46,23 @@ class SmartReport:
             arcconf_path = f'/vmfs/volumes/{self.hostname}_datavol/arcconf'
 
         # Подключение к хостам по ssh, получение данных arcconf smartstats
-        # connect = subprocess.run(
-        #     ["ssh", f"{self.username}@{self.hostname}", f"{arcconf_path}", "GETSMARTSTATS", "1"],
-        #     stdout=subprocess.PIPE)
-        # self.smarts_data = connect.stdout.decode().split('\n')
-        # for string in self.smarts_data:
-        #     if '<SmartStats' in string:
-        #         self.min_string = self.smarts_data.index(string)
-        #     if '</SmartStats>' in string:
-        #         self.max_string = self.smarts_data.index(string) + 1
-        # smartstats_xml = open('smartstats_temp.xml', 'w')
-        # xml = '\n'.join(self.smarts_data[self.min_string:self.max_string]) + '\n'
-        # smartstats_xml.write(xml)
+        connect = subprocess.run(
+            ["ssh", f"{self.username}@{self.hostname}", f"{arcconf_path}", "GETSMARTSTATS", "1"],
+            stdout=subprocess.PIPE)
+        self.smarts_data = connect.stdout.decode().split('\n')
+        for string in self.smarts_data:
+            if '<SmartStats' in string:
+                self.min_string = self.smarts_data.index(string)
+            if '</SmartStats>' in string:
+                self.max_string = self.smarts_data.index(string) + 1
+        with open('/tmp/smartstats_temp.xml', 'w') as smartstats_xml:
+            xml = '\n'.join(self.smarts_data[self.min_string:self.max_string]) + '\n'
+            smartstats_xml.write(xml)
         # smartstats_xml.close()
 
     def get_adaptec_smart_report(self):
         self.drives = []
-        stats = ETree.parse('smartstats_temp.xml')
+        stats = ETree.parse('/tmp/smartstats_temp.xml')
         # Найти корень
         root = stats.getroot()
         for root_attrib in root.attrib:
@@ -69,22 +74,43 @@ class SmartReport:
             for drives_attrib in physical_drives:
                 param_id = drives_attrib.attrib['id']
                 if param_id in PARAMS:
-                    param_name = drives_attrib.attrib["name"]
-                    param_value = drives_attrib.attrib["rawValue"]
+                    # print(param_id)
+                    param_name = PARAMS[param_id]
+                    param_value = int(drives_attrib.attrib["rawValue"])
                     self.config1.update({param_name: param_value})
-            self.config.update({drive: copy.deepcopy(self.config1)})
+            self.config.update({f'id={drive}': copy.deepcopy(self.config1)})
 
-        # for string in self.smarts_data:
-        #     if 'device name' in string.lower():
-        #         self.device_name = string.split()[-1]
-        #     if 'status of logical device' in string.lower():
-        #         self.device_status = string.split()[-1]
-        #     self.config.update({self.device_name: self.device_status})
+    def get_disks(self):
+        """
+        :return
+        """
+        pass
+
+    def smartctl_report(self):
+        """
+
+        :return:
+        """
+        # Подключение к хостам по ssh, получение данных smartctl
+        # connect = subprocess.run(
+        #     ["ssh", f"{self.username}@{self.hostname}", f"{arcconf_path}", "GETSMARTSTATS", "1"],
+        #     stdout=subprocess.PIPE)
+        # # self.smarts_data = connect.stdout.decode().split('\n')
+        # with open('smartctl_out.txt', 'r') as stats:
+        #     for string in stats:
+        #         if 'power_on_hours' in string.lower():
+        #             power_on_hours = string.split()[-1]
+        #         if 'reallocated' in string.lower():
+        #             reallocated_sector_ct = string.split()[-1]
+        #         if 'current_pending' in string.lower():
+        #             current_pending = string.split()[-1]
+        #         if 'offline_uncorrectable' in string.lower():
+        #             offline_uncorrectable = string.split()[-1]
 
     def run(self):
-        self.get_adaptec_smarts_data()
+        # self.get_adaptec_smarts_data()
         self.get_adaptec_smart_report()
-        return self.drives, self.config
+        return self.config
 
 
 def get_data_frame(data):
@@ -93,10 +119,34 @@ def get_data_frame(data):
     :param data: данные в виде словаря
     :return: данные, сформированные в html-таблицу
     """
-    df = pd.DataFrame.from_dict(data=data, orient='columns')
-    df.to_html()
-    table = pretty_html_table.build_table(df=df, color='grey_light', index=True,
-                                          text_align='left', padding="0px 5px 0px 5px")
+    styles = [
+        dict(selector="tr:hover",
+             props=[("background", "#f4f4f4")]),
+        dict(selector="th", props=[("color", "black"),
+                                   ("border", "0 solid #305496"),
+                                   ("padding", "0 5px"),
+                                   ("font-family", 'sans-serif'),
+                                   ("border-collapse", "collapse"),
+                                   ("background", "#D9E1F2"),
+                                   ("font-size", "14px")
+                                   ]),
+        dict(selector="td", props=[("color", "black"),
+                                   ("font-family", 'sans-serif'),
+                                   ("border", "0.5px solid #eee"),
+                                   ("padding", "0px 0px"),
+                                   ("text-align", "center"),
+                                   ("border-collapse", "collapse"),
+                                   ("font-size", "14px")
+                                   ]),
+    ]
+    df = pd.DataFrame.from_dict(data=data, orient='index')
+
+    table = df.style.set_table_styles(table_styles=styles).format(
+        {'Reallocated Sectors Count': lambda x: f'<p style="background-color:red">{x}</p>' if int(x) > 0 else x},
+        {'Current Pending Sector Count': lambda x: f'<p style="background-color:red">{x}</p>' if int(x) > 0 else x},
+        {'Uncorrectable Sectors Count': lambda x: f'<p style="background-color:red">{x}</p>' if int(x) > 0 else x}
+    ).render()
+
     return table
 
 
@@ -116,17 +166,18 @@ if __name__ == '__main__':
         for user_name, hosts in hosts_dict.items():
             for host in hosts:
                 report = SmartReport(username=user_name, hostname=host)
-                drives, ld_stat = report.run()
-                # adaptec_report.update({host: ld_stat})
-                # report_table = report_table + f'<h3>{host}</h3>\n' \
-                #                               f'{get_data_frame(data=ld_stat)}'
-                print(ld_stat)
+                ld_stat = report.run()
+                adaptec_report.update({host: ld_stat})
+                report_table = report_table + f'<h3>{host}</h3>\n' \
+                                              f'{get_data_frame(data=ld_stat)}'
     except Exception as error:
         report_table = error
         print(error)
-    # else:
+    else:
         # Отправка отчета
         # TODO need done sending error with mail
-        # report_message = ReportSender(subject='SMART report',
-        #                               body=report_table)
-        # report_message.run()
+        with open('test.html', 'w') as html:
+            html.write(report_table)
+    #     report_message = ReportSender(subject='SMART report',
+    #                                   body=report_table)
+    #     report_message.run()
