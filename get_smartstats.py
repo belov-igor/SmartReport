@@ -125,7 +125,7 @@ class AdaptecSmartReport:
 
         # В esxi arcconf в PATH не добавлен, лежит в собственных datavol
         if 'esxi' in self.hostname:
-            arcconf_path = f'/vmfs/volumes/{self.hostname}_datavol/arcconf'
+            arcconf_path = f'/vmfs/volumes/{self.hostname}_ssdvol/arcconf'
 
         # Подключение к хостам по ssh, получение данных arcconf smartstats
         connect = subprocess.run(
