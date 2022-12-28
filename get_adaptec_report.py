@@ -4,8 +4,8 @@ import subprocess
 import pandas as pd
 import pretty_html_table
 
-from info.hosts import WINDOWS_HOSTS, LINUX_HOSTS  # хосты из файла, разделены на списки windows и linux
-from info.hosts import WINDOWS_USER, LINUX_USER    # пользователи взяты из файла, разделены на windows и linux
+from config.hosts import WINDOWS_HOSTS, LINUX_HOSTS  # хосты из файла, разделены на списки windows и linux
+from config.hosts import WINDOWS_USER, LINUX_USER    # пользователи взяты из файла, разделены на windows и linux
 from send_email import ReportSender
 
 
@@ -57,7 +57,7 @@ def get_data_frame(data):
     :return: данные, сформированные в html-таблицу
     """
     df = pd.DataFrame.from_dict(data=data, orient='index')
-    df.to_html()
+    df.to_html()  # TODO вот это удалить и потестить
     table = pretty_html_table.build_table(df=df, color='blue_light', index=True,
                                           text_align='center', padding="0px 5px 0px 5px")
     return table
@@ -85,6 +85,7 @@ if __name__ == '__main__':
         report_table = error
     else:
         # Отправка отчета
+        # TODO сделать отправку ошибок
         report_message = ReportSender(subject='Adaptec report',
                                       body=report_table)
         report_message.run()

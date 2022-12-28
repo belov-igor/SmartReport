@@ -1,10 +1,8 @@
 # created by virtualenv automatically
 .idea
 venv
-env
-info/hosts.py
-info/email_server.py
+config/
 old
 smartctl_out.txt
 smartstats_temp.xml
-probe_ctl.py
+
