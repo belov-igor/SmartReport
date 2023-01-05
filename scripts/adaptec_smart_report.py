@@ -8,8 +8,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__package__))
 TMP_XML_PATH = os.path.join(BASE_DIR, 'tmp')  # TODO подставить в проект
 
 DISC_PARAMETERS = {
-    '0x09': 'Power-On Hours',
     '0x05': 'Reallocated Sectors Count',
+    '0x09': 'Power-On Hours',
     '0xC5': 'Current Pending Sector Count',
     '0xC6': 'Uncorrectable Sectors Count'
 }
@@ -19,6 +19,7 @@ class AdaptecSmartReport:
     """
 
     """
+
     def __init__(self, username, hostname, adaptec_num=1):
         """
         :param username: имя пользователя при подключении к удаленному хосту

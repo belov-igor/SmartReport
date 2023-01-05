@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
 import subprocess
-
 import numpy
 import pandas as pd
 
 from config.hosts import SMARTCTL_HOSTS, ADAPTEC_HOSTS
-from send_email import ReportSender
 
+from scripts.send_email import ReportSender
 from scripts.smartctl_report import SmartCtlReport
 from scripts.adaptec_smart_report import AdaptecSmartReport
 from scripts.drives_count_logger import drive_count_logger
@@ -50,7 +49,10 @@ def get_data_frame(data):
     :return: данные, сформированные в html-таблицу
     """
     df = pd.DataFrame.from_dict(data=data, orient='index')
+    df = df[['Power-On Hours', 'Reallocated Sectors Count',
+             'Current Pending Sector Count', 'Uncorrectable Sectors Count']]
     df = df.replace({numpy.nan: '-'})
+
     table = df.style.set_table_styles(table_styles=TABLE_STYLES). \
         format(
         {'Reallocated Sectors Count':
@@ -106,7 +108,7 @@ if __name__ == '__main__':
             for adaptec in range(1, adaptec_count + 1):
                 smart_adaptec_report = AdaptecSmartReport(username=user_name, hostname=host, adaptec_num=adaptec)
                 disc_count, adaptec_name, report = smart_adaptec_report.run()
-                report_table = report_table + f'<div><b>Adaptec {adaptec_name}\n</b></div>' \
+                report_table = report_table + f'<div style="font-weight: bold; margin-top: 5px">Adaptec {adaptec_name}\n</div>' \
                                               f'{drive_count_logger(host=host, drives_count=disc_count, adaptec_num=adaptec, old_path=DRIVE_COUNT_TMP_PATH, new_path=DRIVE_COUNT_TMP_NEW_PATH)}' \
                                               f'{get_data_frame(data=report)}'
 
