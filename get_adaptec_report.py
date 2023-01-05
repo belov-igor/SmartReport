@@ -6,7 +6,7 @@ import pretty_html_table
 
 from config.hosts import WINDOWS_HOSTS, LINUX_HOSTS  # хосты из файла, разделены на списки windows и linux
 from config.hosts import WINDOWS_USER, LINUX_USER    # пользователи взяты из файла, разделены на windows и linux
-from send_email import ReportSender
+from scripts.send_email import ReportSender
 
 
 class AdaptecReport:
