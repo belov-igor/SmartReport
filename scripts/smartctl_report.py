@@ -22,7 +22,7 @@ class SmartCtlReport:
         """
         :return
         """
-        open_script = subprocess.Popen(['cat /root/bin/smartctl_script.sh'], stdout=subprocess.PIPE, shell=True)
+        open_script = subprocess.Popen(['cat /root/bin/smartctl_script.sh'], stdout=subprocess.PIPE, shell=True)  # TODO использовать скрипт из папки
         ssh_connect = subprocess.Popen([f'ssh {self.username}@{self.hostname}'], stdin=open_script.stdout,
                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         open_script.stdout.close()
@@ -34,8 +34,8 @@ class SmartCtlReport:
         :return:
         """
         power_on_hours, reallocated_sector_ct, current_pending, offline_uncorrectable = '-', '-', '-', '-'
-        sg_name = ''
-        sg_list = []
+        sg_name = str()
+        sg_list = list()
         for string in self.smartctl_script_result:
             if "/dev/" in string.lower():
                 sg_name = string[5:]
