@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import subprocess
 import numpy
@@ -11,10 +10,12 @@ from scripts.smartctl_report import SmartCtlReport
 from scripts.adaptec_smart_report import AdaptecSmartReport
 from scripts.drives_count_logger import drive_count_logger
 
+# Пути к используемым временным файлам-логов количества дисков удаленного хоста
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DRIVE_COUNT_TMP_PATH = os.path.join(BASE_DIR, 'tmp/drive_count_tmp.txt')
 DRIVE_COUNT_TMP_NEW_PATH = os.path.join(BASE_DIR, 'tmp/drive_count_tmp_new.txt')
 
+# Стили, используемые при формировании html-таблицы. Подставляются pandas dataframe как стили СSS
 TABLE_STYLES = [
     dict(selector="tr:hover",
          props=[
@@ -54,28 +55,32 @@ def get_data_frame(data):
     df = df.replace({numpy.nan: '-'})
 
     table = df.style.set_table_styles(table_styles=TABLE_STYLES). \
-        format(
-        {'Reallocated Sectors Count':
-             lambda x: f'<p style="background-color:red">{x}</p>' if x != '-' and int(x) > 0 else x,
-         'Current Pending Sector Count':
-             lambda x: f'<p style="background-color:red">{x}</p>' if x != '-' and int(x) > 0 else x,
-         'Uncorrectable Sectors Count':
-             lambda x: f'<p style="background-color:red">{x}</p>' if x != '-' and int(x) > 0 else x
-         },
-    ).render()
+        format({'Reallocated Sectors Count':
+                    lambda x: f'<p style="background-color:red">{x}</p>' if x != '-' and int(x) > 0 else x,
+                'Current Pending Sector Count':
+                    lambda x: f'<p style="background-color:red">{x}</p>' if x != '-' and int(x) > 0 else x,
+                'Uncorrectable Sectors Count':
+                    lambda x: f'<p style="background-color:red">{x}</p>' if x != '-' and int(x) > 0 else x}) \
+        .render()
 
     return table
 
 
 def adaptec_counter(username, hostname):
+    """
+    Функция подсчета количества используемых adaptec на удаленном хосте
+
+    :param username: имя пользователя при подключении к удаленному хосту;
+    :param hostname: имя удаленного хоста;
+    :return: количество используемых adaptec
+    """
     count = 1
     # По умолчанию arcconf должен быть добавлен на сервере в переменную PATH
     arcconf_path = 'arcconf'
-
-    # В esxi arcconf в PATH не добавлен, лежит в собственных datavol
+    # В esxi arcconf в PATH не добавлен, лежит в собственных datavol или ssdvol (унифицировать, к сожалению, нельзя)
     if 'esxi' in hostname:
         arcconf_path = f'/vmfs/volumes/{hostname}_ssdvol/arcconf'
-
+    # Подключение к хостам по ssh, получение данных arcconf getversion
     connect = subprocess.run(
         ["ssh", f"{username}@{hostname}", f"{arcconf_path}", "getversion"],
         stdout=subprocess.PIPE)
@@ -87,39 +92,53 @@ def adaptec_counter(username, hostname):
 
 
 if __name__ == '__main__':
-
     host = str()
-
     try:
 
-        report_table = '<h2>SMART report</h2>\n'
+        report_table = '<h1>SMART report</h1>\n'
 
-        # Проход по хостам и формирование отчета в виде html-таблицы
+        # Проход по хостам и формирование отчета в виде html-таблицы для хостов, использующий утилиту smartctl
         for host, user_name in SMARTCTL_HOSTS.items():
-            report_table = report_table + f'<h3>{host}</h3>\n'
+            report_table = report_table + f'<h2>{host}</h2>\n'
+            # Использования класса-обработчика
             smartctl_report = SmartCtlReport(username=user_name, hostname=host)
-            disc_count, report = smartctl_report.run()
-            report_table = report_table + f'{drive_count_logger(host=host, drives_count=disc_count, old_path=DRIVE_COUNT_TMP_PATH, new_path=DRIVE_COUNT_TMP_NEW_PATH)}' \
-                                          f'{get_data_frame(data=report)}'
+            drive_count, report = smartctl_report.run()
+            # Обращение к логеру количества дисков для сравнения
+            drives_count_compare = drive_count_logger(host=host, drives_count=drive_count,
+                                                      old_path=DRIVE_COUNT_TMP_PATH,
+                                                      new_path=DRIVE_COUNT_TMP_NEW_PATH)
+            # Формирование html-таблицы с результатами
+            report_table = f'{report_table} ' \
+                           f'{drives_count_compare}' \
+                           f'{get_data_frame(data=report)}'
 
+        # Проход по хостам и формирование отчета в виде html-таблицы для хостов, использующий adaptec arcconf
         for host, user_name in ADAPTEC_HOSTS.items():
-            report_table = report_table + f'<h3>{host}</h3>\n'
+            report_table = report_table + f'<h2>{host}</h2>\n'
+            # Подсчет количества adaptec, используемых на сервере
             adaptec_count = adaptec_counter(username=user_name, hostname=host)
+            # Использования класса-обработчика
             for adaptec in range(1, adaptec_count + 1):
                 smart_adaptec_report = AdaptecSmartReport(username=user_name, hostname=host, adaptec_num=adaptec)
-                disc_count, adaptec_name, report = smart_adaptec_report.run()
-                report_table = report_table + f'<div style="font-weight: bold; margin-top: 5px">Adaptec {adaptec_name}\n</div>' \
-                                              f'{drive_count_logger(host=host, drives_count=disc_count, adaptec_num=adaptec, old_path=DRIVE_COUNT_TMP_PATH, new_path=DRIVE_COUNT_TMP_NEW_PATH)}' \
-                                              f'{get_data_frame(data=report)}'
+                drive_count, adaptec_name, report = smart_adaptec_report.run()
+                # Обращение к логеру количества дисков для сравнения
+                drives_count_compare = drive_count_logger(host=host, drives_count=drive_count, adaptec_num=adaptec,
+                                                          old_path=DRIVE_COUNT_TMP_PATH,
+                                                          new_path=DRIVE_COUNT_TMP_NEW_PATH)
+                # Формирование html-таблицы с результатами
+                report_table = f'{report_table} ' \
+                               f'<div style="font-weight: bold; margin-top: 5px">Adaptec {adaptec_name}</div>' \
+                               f'{drives_count_compare}' \
+                               f'{get_data_frame(data=report)}'
 
     except Exception as error:
-        report_table = error
-        print(f'{host}: {error}')
+        # Запись ошибки для отправки в письме
+        report_table = error.args
     else:
+        # Замена файла-лога с записью о количестве дисков на актуальный
         os.rename(DRIVE_COUNT_TMP_NEW_PATH, DRIVE_COUNT_TMP_PATH)
 
         # Отправка отчета
-        # TODO need done sending error with mail
         report_message = ReportSender(subject='SMART report',
                                       body=report_table)
         report_message.run()
