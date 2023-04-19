@@ -11,8 +11,17 @@ DRIVE_PARAMETERS = {
     '0x05': 'Reallocated Sectors Count',
     '0x09': 'Power-On Hours',
     '0xC5': 'Current Pending Sector Count',
-    '0xC6': 'Uncorrectable Sectors Count'
+    '0xC6': 'Uncorrectable Sectors Count',
+    '0xE9': 'Media Wearout Indicator',
 }
+
+
+def sort_by_id(item):
+    """Return numerical room given a (name, room_number) tuple."""
+    name, room = item
+    _, number = room.split()
+    print(number)
+    return int(number)
 
 
 class AdaptecSmartReport:
@@ -92,10 +101,20 @@ class AdaptecSmartReport:
                 param_id = drives_attrib.attrib['id']
                 if param_id in DRIVE_PARAMETERS:
                     param_name = DRIVE_PARAMETERS[param_id]
-                    param_value = drives_attrib.attrib["rawValue"]
+                    if param_name == 'Media Wearout Indicator':
+                        param_value = drives_attrib.attrib["normalizedWorst"]  # TODO найти правильный параметр
+                    else:
+                        param_value = drives_attrib.attrib["rawValue"]
                     self.one_drive_report.update({param_name: param_value})
                 self.report.update({f'id={drive}': copy.deepcopy(self.one_drive_report)})
             self.drives_count = len(drives)
+
+    def sort_by_id(self, item):
+        """Return numerical room given a (name, room_number) tuple."""
+        name, room = item
+        _, self.sorta = room.split()
+        print(self.sorta)
+        return int(self.sorta)
 
     def run(self):
         """
@@ -111,4 +130,4 @@ class AdaptecSmartReport:
         # Удаление временного xml-файла
         os.remove(TMP_XML_PATH)
 
-        return self.drives_count, self.adaptec_name, self.report
+        return self.drives_count, self.adaptec_name, dict(sorted(self.report.items(), key=self.sort_by_id))

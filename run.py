@@ -3,6 +3,7 @@ import subprocess
 import numpy
 import pandas as pd
 
+
 from config.hosts import SMARTCTL_HOSTS, ADAPTEC_HOSTS
 
 from scripts.send_email import ReportSender
@@ -50,8 +51,10 @@ def get_data_frame(data):
     :return: данные, сформированные в html-таблицу
     """
     df = pd.DataFrame.from_dict(data=data, orient='index')
-    df = df[['Power-On Hours', 'Reallocated Sectors Count',
-             'Current Pending Sector Count', 'Uncorrectable Sectors Count']]
+    # df = df[['Power-On Hours', 'Reallocated Sectors Count',
+    #          'Current Pending Sector Count', 'Uncorrectable Sectors Count',
+             # 'Media Wearout Indicator'
+             # ]]
     df = df.replace({numpy.nan: '-'})
 
     table = df.style.set_table_styles(table_styles=TABLE_STYLES). \
