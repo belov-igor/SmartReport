@@ -16,14 +16,6 @@ DRIVE_PARAMETERS = {
 }
 
 
-def sort_by_id(item):
-    """Return numerical room given a (name, room_number) tuple."""
-    name, room = item
-    _, number = room.split()
-    print(number)
-    return int(number)
-
-
 class AdaptecSmartReport:
     """
     Класс-обработчик данных, полученных с adaptec для подключенных дисков командой arcconf getsmartstats
@@ -38,6 +30,7 @@ class AdaptecSmartReport:
         :param hostname: имя удаленного хоста
         :param adaptec_num: порядковый номер adaptec (если подключено больше 1-го)
         """
+        self.dict_item = str()
         self.username = username
         self.hostname = hostname
         self.adaptec_num = adaptec_num
@@ -80,8 +73,8 @@ class AdaptecSmartReport:
         """
         Извлечение данных из xml-файла и их обработка.
         :return: report - обработанные данные (отчет) с arcconf smartstats в виде словаря:
-                {'id=N':{параметр1: величина1, параметр2: величина2, ...}},
-                где N - номер диска; параметры взяты из константы DRIVE_PARAMETERS
+                {'id=number':{параметр1: величина1, параметр2: величина2, ...}},
+                где number - номер диска; параметры взяты из константы DRIVE_PARAMETERS
         """
         drives = []
 
@@ -109,12 +102,16 @@ class AdaptecSmartReport:
                 self.report.update({f'id={drive}': copy.deepcopy(self.one_drive_report)})
             self.drives_count = len(drives)
 
-    def sort_by_id(self, item):
-        """Return numerical room given a (name, room_number) tuple."""
-        name, room = item
-        _, self.sorta = room.split()
-        print(self.sorta)
-        return int(self.sorta)
+    def sort_by_id(self, dict_item):
+        self.dict_item = dict_item
+        """
+        Функция для сортировки словаря с отчетом по номеру диска id
+        :param: item: Элемент словаря вида {'id=number': {...}}, где number - номер диска
+        :return: number: номер диска для сортировки
+        """
+        drive = dict_item[1]
+        _, number = drive.split('=')
+        return int(number)
 
     def run(self):
         """
