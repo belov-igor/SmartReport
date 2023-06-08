@@ -1,0 +1,40 @@
+<SmartStats controllerID="0" time="1667466567" deviceVendor="Adaptec" deviceName="6805E" serialNumber="4A21136BC31">
+<PhysicalDriveSmartStats channel="0" id="1000" nonSpinning="false" isDescriptionAvailable="true" >
+<Attribute id="0x01" name="Read Error Rate" normalizedCurrent="200" normalizedWorst="200" rawValue="1" />
+<Attribute id="0x03" name="Spin-Up Time in millisecs" normalizedCurrent="138" normalizedWorst="133" rawValue="4083" />
+<Attribute id="0x04" name="Start/Stop Count" normalizedCurrent="100" normalizedWorst="100" rawValue="85" />
+<Attribute id="0x05" name="Reallocated Sectors Count" normalizedCurrent="200" normalizedWorst="200" rawValue="17" />
+<Attribute id="0x07" name="Seek Error Rate" normalizedCurrent="200" normalizedWorst="200" rawValue="0" />
+<Attribute id="0x09" name="Power-On Hours" normalizedCurrent="5" normalizedWorst="5" rawValue="69957" />
+<Attribute id="0x0A" name="Spin Retry Count" normalizedCurrent="100" normalizedWorst="253" rawValue="0" />
+<Attribute id="0x0B" name="Recalibration Retries" normalizedCurrent="100" normalizedWorst="253" rawValue="0" />
+<Attribute id="0x0C" name="Power Cycle Count" normalizedCurrent="100" normalizedWorst="100" rawValue="83" />
+<Attribute id="0xC0" name="Power-off Retract Count" normalizedCurrent="200" normalizedWorst="200" rawValue="82" />
+<Attribute id="0xC1" name="Load/Unload Cycle Count" normalizedCurrent="200" normalizedWorst="200" rawValue="2" />
+<Attribute id="0xC2" name="Current Internal Temperature" normalizedCurrent="112" normalizedWorst="102" rawValue="31" />
+<Attribute id="0xC4" name="Reallocation Event Count" normalizedCurrent="200" normalizedWorst="200" rawValue="0" />
+<Attribute id="0xC5" name="Current Pending Sector Count" normalizedCurrent="200" normalizedWorst="200" rawValue="0" />
+<Attribute id="0xC6" name="Uncorrectable Sector Count" normalizedCurrent="100" normalizedWorst="253" rawValue="0" />
+<Attribute id="0xC7" name="UltraDMA CRC Error Count" normalizedCurrent="200" normalizedWorst="200" rawValue="0" />
+<Attribute id="0xC8" name="Multi-Zone Error Rate" normalizedCurrent="100" normalizedWorst="253" rawValue="0" />
+</PhysicalDriveSmartStats>
+<PhysicalDriveSmartStats channel="0" id="1" nonSpinning="false" isDescriptionAvailable="true" >
+<Attribute id="0x01" name="Read Error Rate" normalizedCurrent="95" normalizedWorst="95" rawValue="524294" />
+<Attribute id="0x02" name="Throughput Performance" normalizedCurrent="100" normalizedWorst="100" rawValue="0" />
+<Attribute id="0x03" name="Spin-Up Time in millisecs" normalizedCurrent="100" normalizedWorst="100" rawValue="38687736299" />
+<Attribute id="0x04" name="Start/Stop Count" normalizedCurrent="100" normalizedWorst="100" rawValue="2290" />
+<Attribute id="0x05" name="Reallocated Sectors Count" normalizedCurrent="100" normalizedWorst="100" rawValue="0" />
+<Attribute id="0x07" name="Seek Error Rate" normalizedCurrent="100" normalizedWorst="100" rawValue="0" />
+<Attribute id="0x08" name="Seek Time Performance in millisecs" normalizedCurrent="100" normalizedWorst="100" rawValue="0" />
+<Attribute id="0x09" name="Power-On Hours" normalizedCurrent="95" normalizedWorst="95" rawValue="38339" />
+<Attribute id="0x0A" name="Spin Retry Count" normalizedCurrent="100" normalizedWorst="100" rawValue="0" />
+<Attribute id="0x0C" name="Power Cycle Count" normalizedCurrent="100" normalizedWorst="100" rawValue="2220" />
+<Attribute id="0xC0" name="Power-off Retract Count" normalizedCurrent="98" normalizedWorst="98" rawValue="3463" />
+<Attribute id="0xC1" name="Load/Unload Cycle Count" normalizedCurrent="98" normalizedWorst="98" rawValue="3463" />
+<Attribute id="0xC2" name="Current Internal Temperature" normalizedCurrent="162" normalizedWorst="162" rawValue="37" />
+<Attribute id="0xC4" name="Reallocation Event Count" normalizedCurrent="100" normalizedWorst="100" rawValue="0" />
+<Attribute id="0xC5" name="Current Pending Sector Count" normalizedCurrent="100" normalizedWorst="100" rawValue="0" />
+<Attribute id="0xC6" name="Uncorrectable Sector Count" normalizedCurrent="100" normalizedWorst="100" rawValue="0" />
+<Attribute id="0xC7" name="UltraDMA CRC Error Count" normalizedCurrent="200" normalizedWorst="253" rawValue="14151" />
+</PhysicalDriveSmartStats>
+</SmartStats>
