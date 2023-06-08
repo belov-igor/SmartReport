@@ -51,10 +51,9 @@ def get_data_frame(data):
     :return: данные, сформированные в html-таблицу
     """
     df = pd.DataFrame.from_dict(data=data, orient='index')
-    # df = df[['Power-On Hours', 'Reallocated Sectors Count',
-    #          'Current Pending Sector Count', 'Uncorrectable Sectors Count',
-             # 'Media Wearout Indicator'
-             # ]]
+    desired_columns = ['Power-On Hours', 'Reallocated Sectors Count', 'Current Pending Sector Count',
+                       'Uncorrectable Sectors Count', 'Media Wearout Indicator']
+    df = df.reindex(columns=desired_columns)
     df = df.replace({numpy.nan: '-'})
 
     table = df.style.set_table_styles(table_styles=TABLE_STYLES). \
