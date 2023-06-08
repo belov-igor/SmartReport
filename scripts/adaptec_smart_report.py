@@ -30,6 +30,7 @@ class AdaptecSmartReport:
         :param hostname: имя удаленного хоста
         :param adaptec_num: порядковый номер adaptec (если подключено больше 1-го)
         """
+        self.id = str()
         self.dict_item = str()
         self.username = username
         self.hostname = hostname
@@ -103,14 +104,14 @@ class AdaptecSmartReport:
             self.drives_count = len(drives)
 
     def sort_by_id(self, dict_item):
-        self.dict_item = dict_item
         """
         Функция для сортировки словаря с отчетом по номеру диска id
         :param: item: Элемент словаря вида {'id=number': {...}}, где number - номер диска
         :return: number: номер диска для сортировки
         """
-        drive = dict_item[1]
-        _, number = drive.split('=')
+        self.dict_item = dict_item
+        self.id = dict_item[0]
+        _, number = self.id.split('=')
         return int(number)
 
     def run(self):
