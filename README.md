@@ -1,10 +1,10 @@
 # SmartReport
 SmartReport - инструмент для мониторинга состояния дисков на удаленных хостах. Он позволяет проверять и анализировать данные SMART (Self-Monitoring, Analysis and Reporting Technology) для обнаружения проблем и предупреждения о возможных отказах дисков.
-Установка
+
+## Установка
 Клонируйте репозиторий SmartReport на ваше локальное устройство:
 
-bash
-Copy code
+'''bash
 git clone https://github.com/belov-igor/SmartReport.git
 Установите необходимые зависимости:
 
