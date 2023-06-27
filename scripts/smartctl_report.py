@@ -46,7 +46,8 @@ class SmartCtlReport:
                 {'sgN':{параметр1: величина1, параметр2: величина2, ...}},
                 где N - номер диска; требуемые параметры дисков
         """
-        power_on_hours, reallocated_sector_ct, current_pending, offline_uncorrectable = '-', '-', '-', '-'
+        power_on_hours, reallocated_sector_ct = '-', '-'
+        current_pending, offline_uncorrectable, media_wearout = '-', '-', '-'
         sg_name = str()
         sg_list = list()
         for string in self.smartctl_script_result:
@@ -62,10 +63,13 @@ class SmartCtlReport:
                 current_pending = int(string.split()[-1])
             if 'offline_uncorrectable' in string.lower():
                 offline_uncorrectable = int(string.split()[-1])
+            if 'wearout' in string.lower():
+                media_wearout = int(string.split()[3])
             self.report.update({sg_name: {'Power-On Hours': power_on_hours,
                                           'Reallocated Sectors Count': reallocated_sector_ct,
                                           'Current Pending Sector Count': current_pending,
-                                          'Uncorrectable Sectors Count': offline_uncorrectable}})
+                                          'Uncorrectable Sectors Count': offline_uncorrectable,
+                                          'Media Wearout Indicator': media_wearout}})
 
     def run(self):
         """

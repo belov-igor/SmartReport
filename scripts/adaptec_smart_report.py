@@ -96,7 +96,7 @@ class AdaptecSmartReport:
                 if param_id in DRIVE_PARAMETERS:
                     param_name = DRIVE_PARAMETERS[param_id]
                     if param_name == 'Media Wearout Indicator':
-                        param_value = drives_attrib.attrib["normalizedWorst"]  # TODO найти правильный параметр
+                        param_value = drives_attrib.attrib["normalizedWorst"]
                     else:
                         param_value = drives_attrib.attrib["rawValue"]
                     self.one_drive_report.update({param_name: param_value})
